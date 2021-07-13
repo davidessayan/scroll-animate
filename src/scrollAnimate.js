@@ -8,6 +8,8 @@
     length: 100,
   };
 
+  var eventLoad = new Event('scroll-animate.loaded');
+
   var _log = function (msg) {
     console.error(msg);
   };
@@ -81,6 +83,11 @@
     window.requestAnimationFrame(_animationFrame);
   };
 
+  var _onLoaded = function () {
+    parent.dispatchEvent( eventLoad );
+    _animationStart();
+  };
+
   var init = function (params) {
     if (typeof params === 'undefined') {
       _log('Invalid Settings!', 'An object must be passsed.');
@@ -103,11 +110,11 @@
     scroll.length = scroll.start + params.scroll.length;
 
     if (Array.isArray(params.frames)) {
-      assets = _downloadAssets(params.frames, _animationStart);
+      assets = _downloadAssets(params.frames, _onLoaded);
     } else if (typeof params.frames === 'object') {
       assets = _downloadAssets(_generateAssetsUrl(params.frames.path, params.frames.prefix,
         params.frames.extension, params.frames.amount,
-        params.frames.pad ? params.frames.pad : false), _animationStart);
+        params.frames.pad ? params.frames.pad : false), _onLoaded);
     } else {
       _log('Invalid frames argument!', 'frames must be of type array or object.');
     }
